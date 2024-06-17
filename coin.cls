@@ -283,7 +283,7 @@ linktocpage=true,
       bottomline=false,
     }
     \declaretheoremstyle[
-      headfont=\bfseries\color{RubineRed!50!black},
+      headfont=\sffamily\bfseries\color{RubineRed!40!black},
       mdframed={style=mdpinkbox},
       headpunct={\\[3pt]},
       postheadspace={0pt},
@@ -334,7 +334,8 @@ linktocpage=true,
     ]{thmblackbox}
     \mdfdefinestyle{mdyellowbox}{%
       skipabove=8pt,
-      linewidth=3pt,
+      skipbelow=0pt,
+      linewidth=2pt,
       rightline=false,
       leftline=true,
       topline=false,
@@ -343,10 +344,10 @@ linktocpage=true,
       backgroundcolor=GreenYellow!20,
     }
     \declaretheoremstyle[
-      headfont=\bfseries\color{Sepia},
+      headfont=\sffamily\bfseries\color{Yellow!50!Sepia},
       bodyfont=\normalfont\small,
-      spaceabove=0pt,
-      spacebelow=0pt,
+      spaceabove=2pt,
+      spacebelow=1pt,
       mdframed={style=mdyellowbox}
     ]{thmyellowbox}
     \newcommand{\listhack}{$\empty$\vspace{-2em}}
@@ -393,3 +394,4 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
 }{
 \par \medskip
 }
+
