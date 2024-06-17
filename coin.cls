@@ -10,8 +10,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{coin}
 \LoadClass[twoside,12pt]{article}
-\newif\ifgeo\geofalse
-\DeclareOption{geo}{\geotrue}
 \ProcessOptions\relax
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage{graphicx,float}
@@ -47,7 +45,8 @@ linktocpage=true,
 
 \newcommand{\hrulebar}{\par\noindent\hspace{\fill}\rule{0.95\linewidth}{.7pt}\hspace{\fill}
   \par\nointerlineskip \vspace{\baselineskip}}%barrinha
-\newcommand{\destaque}[1]{\bfont\textbf{\hl{#1}}\normalfont}
+\newcommand{\emfase}[1]{\bfont\textbf{\hl{#1}}\normalfont}
+\newcommand{\destaque}[1]{\textbf{\bfont\textcolor{Blue}{#1}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \setlength{\headheight}{25pt}
 \addtolength{\topmargin}{-9pt}
@@ -99,9 +98,9 @@ linktocpage=true,
 %Comandos matemáticos para facilitar
 % Esses comandos sao inspirados/copiados pelo evan.sty
 %Geometria
-\newcommand{\ol}{\overline}
-\newcommand{\wt}{\widetilde}%til
-\newcommand{\wh}{\widehat}%chapéu
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\wtil}[1]{\widetilde{#1}}%til
+\newcommand{\what}[1]{\widehat{#1}}%chapéu
 \newcommand{\arc}[1]{{%arco
   \setbox9=\hbox{#1}%
   \ooalign{\resizebox{\wd9}{\height}{\texttoptiebar{\phantom{A}}}\cr#1}}}
@@ -115,11 +114,11 @@ linktocpage=true,
 \DeclareMathOperator{\mmc}{mmc}%mmc
 \DeclareMathOperator{\sgn}{sgn}%sinal
 \DeclareMathOperator{\id}{id}%identidade
-\DeclareMathOperator{\order}{ord}%ordem
+\let\ord\relax
+\DeclareMathOperator{\ord}{ord}%ordem
 \DeclareMathOperator{\vp}{\nu}%valorizacao p-adica
 
 %Comb e Conjuntos
-\DeclareMathOperator{\grau}{Deg} %grau
 \newcommand{\CC}{\mathbb C}%complexos
 \newcommand{\FF}{\mathbb F}%corpo
 \newcommand{\NN}{\mathbb N}%naturais
@@ -135,14 +134,15 @@ linktocpage=true,
 \DeclareMathOperator{\cis}{cis}%cis (complexos)
 \DeclareMathOperator{\sen}{sen}%seno brasileiro
 \DeclareMathOperator{\tg}{tg}%tangente brasileira
-\newcommand{\cycsum}{\sum_{\mathrm{cíc}}}%somatorio ciclico
+\newcommand{\cycsum}{\sum_{\mathrm{cic}}}%somatorio ciclico
 \newcommand{\symsum}{\sum_{\mathrm{sim}}}%somatorio simetrico
-\newcommand{\cycprod}{\prod_{\mathrm{cíc}}}%produtorio ciclico
+\newcommand{\cycprod}{\prod_{\mathrm{cic}}}%produtorio ciclico
 \newcommand{\symprod}{\prod_{\mathrm{sim}}}%produtorio simetrico
 \DeclareMathOperator{\re}{Re}%parte real
 \DeclareMathOperator{\im}{Im}%parte imaginaria
 \DeclareMathOperator{\img}{im}%imagem
 \newcommand{\inv}{^{-1}}%inverso
+\newcommand{\half}{\frac{1}{2}}%meio
 \newcommand{\bcha}[1]{\left\lbrace #1 \right\rbrace}%chaves elegante 
 \newcommand{\bpar}[1]{\left( #1 \right)} %parenteses elegante
 \newcommand{\bcol}[1]{\left[ #1 \right]} %colchetes elegante
@@ -151,28 +151,27 @@ linktocpage=true,
 \newcommand{\norm}[1]{\left\lVert #1 \right\rVert}%modulo duplo
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}%teto
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}%piso
-\newcommand{\of}[1]{{\left( #1 \right)}}%USAR PARA FUNCOES
 \newcommand{\then}{\Rightarrow}%entao
-\newcommand{\xmark}{\ding{55}}%cross, nao
+\newcommand{\xmark}{\textcolor{red}{\ding{55}}}%cross, nao
 \newcommand{\absurd}{\bfont\textcolor{red}{ABS \xmark}}%absurdo
 \newcommand{\cmark}{\textcolor{LimeGreen}{\ding{51}}}%check
 \renewcommand{\qed}{\hspace{1cm} $\blacksquare$}%qed
-\newcommand{\mdev}[3]{
-\ifnum #3=1
-\frac{d#1}{d#2}
+\newcommand{\dev}[3][1]{
+\ifnum #1=1
+\frac{d#2}{d#3}
 \else
-\frac{d^{#3}#1}{d#2^{#3}}
+\frac{d^{#1}#2}{d#3^{#1}}
 \fi
-}%derivada varias vezes
-\newcommand{\dev}[2]{\frac{d#1}{d#2}}%derivada
-\newcommand{\pardev}[2]{\frac{\partial#1}{\partial#2}}%derivada parcial
-\newcommand{\mpardev}[3]{
-\ifnum#3=1
-\frac{\partial#1}{\partial#2}
+}%derivada
+\newcommand{\pardev}[3][1]{
+\ifnum#1=1
+\frac{\partial#2}{\partial#3}
 \else
-\frac{\partial^{#3}#1}{\partial#2^{#3}}
+\frac{\partial^{#1}#2}{\partial#3^{#1}}
 \fi
-}%derivada parcial varias vezes
+}%derivada parcial
+\newcommand{\upbrace}[2]{\overbrace{#1}^{#2}}
+\newcommand{\downbrace}[2]{\underbrace{#1}_{#2}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Definicao pro asy do evan (copiado)
 \begin{asydef}
@@ -309,7 +308,13 @@ linktocpage=true,
       mdframed={style=mdgreenbox},
       headpunct={ --- },
     ]{thmgreenbox}
-
+\declaretheoremstyle[
+      headfont=\bfseries\sffamily\color{ForestGreen!70!black},
+      bodyfont=\normalfont,
+      spaceabove=2pt,
+      spacebelow=1pt,
+      mdframed={style=mdgreenbox},
+    ]{thmgrenbox}
     \mdfdefinestyle{mdblackbox}{%
       skipabove=8pt,
       linewidth=3pt,
@@ -327,26 +332,23 @@ linktocpage=true,
       spacebelow=0pt,
       mdframed={style=mdblackbox}
     ]{thmblackbox}
-
-    \mdfdefinestyle{mdpurplebox}{%
-      roundcorner=10pt,
-      linewidth=1pt,
-      skipabove=12pt,
-      skipbelow=12pt,
-      innertopmargin=9pt,
-      innerbottommargin=9pt,
-      linecolor=black,
-      nobreak=true,
-      backgroundcolor=Orchid!10,
-      shadow=true,
-      shadowsize=6pt,
-      shadowcolor=black!30,
-      frametitleaboveskip=8pt,
-      frametitlebelowskip=8pt,
-      frametitlebackgroundcolor=Violet!50!black,
-      frametitlefont=\bfseries\sffamily\color{white},
-      frametitlerule=true,
+    \mdfdefinestyle{mdyellowbox}{%
+      skipabove=8pt,
+      linewidth=3pt,
+      rightline=false,
+      leftline=true,
+      topline=false,
+      bottomline=false,
+      linecolor=Yellow,
+      backgroundcolor=GreenYellow!20,
     }
+    \declaretheoremstyle[
+      headfont=\bfseries\color{Sepia},
+      bodyfont=\normalfont\small,
+      spaceabove=0pt,
+      spacebelow=0pt,
+      mdframed={style=mdyellowbox}
+    ]{thmyellowbox}
     \newcommand{\listhack}{$\empty$\vspace{-2em}}
     \theoremstyle{definition}
     \declaretheorem[style=thmbluebox,name=Teorema]{theorem}
@@ -358,7 +360,7 @@ linktocpage=true,
       \declaretheorem[style=thmpinkbox,name=Proposição,numbered=no]{proposition*}
       \declaretheorem[style=thmpinkbox,name=Corolário,numbered=no]{corollary*}
       \declaretheorem[style=thmgreenbox,name=Algoritmo,numbered=no]{algorithm}
-      \declaretheorem[style=thmgreenbox,name=Solução Guiada,numbered=no]{walkthrough}
+      \declaretheorem[style=thmgrenbox,name=Solução Guiada,numbered=no]{walkthrough}
       \declaretheorem[style=thmredbox,name=Exemplo]{example}
       \declaretheorem[style=thmredbox,name=Exemplo,numbered=no]{example*}
       \declaretheorem[style=thmblackbox,name=Nota,numbered=no]{remark}
@@ -370,10 +372,9 @@ linktocpage=true,
       ]{basehead}
     \declaretheorem[style=thmgreenbox,name=Definição]{definition}
     \declaretheorem[style=thmgreenbox,name=Definição,numbered=no]{definition*}
-    \declaretheorem[style=basehead,name=Afirmação]{claim}
-      \declaretheorem[style=basehead,name=Afirmação,numbered=no]{claim*}
-    \declaretheorem[style=basehead,name=Fato]{fact}
-    \declaretheorem[style=basehead,name=Fato,numbered=no]{fact*}
+      \declaretheorem[style=thmyellowbox,name=Afirmação,numbered=no]{claim}
+    \declaretheorem[style=thmyellowbox,name=Fato]{fact}
+    \declaretheorem[style=thmyellowbox,name=Fato,numbered=no]{fact*}
     \declaretheorem[style=basehead,name=Problema]{problem}
 \newcounter{step}
 \newenvironment{solution}[2][1,Boldenkryptz]{
