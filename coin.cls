@@ -14,8 +14,7 @@
 \ProcessOptions\relax
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[portuguese]{babel}
-\RequirePackage{graphicx,float,geometry}
-\RequirePackage{booktabs,csquotes,enumitem,lipsum,multicol}
+\RequirePackage{graphicx,float,geometry,enumitem,varwidth,calc}
 \RequirePackage{ifthen,import,xparse,soul,emptypage,float,indentfirst}
 \RequirePackage{tikz,asymptote,pgfplots}
 \RequirePackage{biblatex}
@@ -37,9 +36,6 @@ filecolor=RubineRed,
 citecolor=ForestGreen,
 linktocpage=true,
 }%cores dos links
-
-\newcommand{\tbox}[1]{\setlength{\fboxrule}{2pt}\fbox{#1}\setlength{\fboxrule}{0.4pt}}%caixinha
-
 \newcommand{\hrulebar}{\par\noindent\hspace{\fill}\rule{0.95\linewidth}{.7pt}\hspace{\fill}
   \par\nointerlineskip \vspace{\baselineskip}}%barrinha
   
@@ -53,10 +49,7 @@ left=1.5cm,
 right=1.5cm,
 top=2.7cm,
 }
-
-\newcommand{\incgr}[2]{{\par \centering \includegraphics[scale=#1]{#2} \par}}
-\newcommand{\wincgr}[2]{{\par \centering \includegraphics[width=#1\textwidth]{#2} \par}}
-\newcommand{\hincgr}[2]{{\par \centering \includegraphics[height=#1\textheight]{#2} \par}}%Comando para incluir imagens do Kevin Zhou
+\newcommand{\coin}{{\bfont\bfseries\color{teal}COIN}} %usado para mencionar o projeto coin
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \setlength{\headheight}{25pt}
 \addtolength{\topmargin}{-9pt}
@@ -175,7 +168,7 @@ top=2.7cm,
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}%piso
 \newcommand{\then}{\Rightarrow}%entao
 \newcommand{\xmark}{\textcolor{red}{\ding{55}}}%cross, nao
-\newcommand{\absurd}{\bfont\textcolor{red}{ABS \xmark}}%absurdo
+\newcommand{\absurd}{{\bfont\textcolor{red}{ABS \xmark}}}%absurdo
 \newcommand{\cmark}{\textcolor{LimeGreen}{\ding{51}}}%check
 \renewcommand{\qed}{\hspace{1cm} $\blacksquare$}%qed
 \newcommand{\dev}[3][1]{
@@ -198,6 +191,7 @@ top=2.7cm,
 %Fisica inspirado pelo Kevin Zhou
 \newcommand{\grad}{\nabla}
 \newcommand{\curl}{\nabla \times}
+\newcommand{\vect}[1]{\mathbf{#1}}
 % improvements on existing commands
 \let\oldemptyset\emptyset         % save bad looking empty set
 \let\emptyset\varnothing          % good looking empty set
@@ -437,8 +431,7 @@ top=2.7cm,
     \declaretheorem[style=thmpinkbox,name=Proposição]{aproposition}
     \newenvironment{proposition}[1][ ]{\begin{aproposition}[#1]\label{prop\theaproposition}}{\end{aproposition}}
     \declaretheorem[style=thmpinkbox,name=Proposição,numbered=no]{proposition*}
-    \declaretheorem[style=thmpinkbox,name=Afirmação,numbered=no]{aclaim}
-    \newenvironment{claim}[1][ ]{\begin{aclaim}[#1]\label{claim\theaclaim}}{\end{aclaim}}
+    \declaretheorem[style=thmpinkbox,name=Afirmação,numbered=no]{claim}
     \declaretheorem[style=thmpinkbox,name=Ideia]{aidea}
     \newenvironment{idea}[1][ ]{\begin{aidea}[#1]\label{idea\theaidea}}{\end{aidea}}
     \declaretheorem[style=thmpinkbox,name=Ideia,numbered=no]{idea*}
@@ -465,7 +458,7 @@ top=2.7cm,
     %
     \declaretheorem[style=thmgreenbox,name=Método,numbered=no]{method}
 \newcounter{step}
-\newenvironment{solution}[2][1,Boldenkryptz]{
+\DeclareDocumentEnvironment{solution}{O{1}o}{
 \par \medskip
 \setcounter{step}{1}
 \ifnum #1=1 \emph{Solução} \fi
@@ -493,10 +486,22 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
       innertopmargin=8pt,
       innerbottommargin=8pt,
       nobreak=true,
-      userdefinedwidth=16cm,
       align=center,
-      linecolor=ForestGreen}
-\newcommand{\important}[1]{\begin{mdframed}[style=importat]\color{ForestGreen}\bfseries#1 \end{mdframed}}
+      linecolor=ForestGreen,}
+\newcommand{\important}[1]{
+\newlength{\leng}
+\newdimen\mywidth
+\setbox0=\hbox{\bfseries#1}
+\mywidth=\wd0
+\ifdim\mywidth>16cm
+\setlength{\leng}{16cm}
+\else\setlength{\leng}{\mywidth}
+\fi
+\addtolength{\leng}{20pt}
+\begin{mdframed}[userdefinedwidth=\leng,style=importat]
+\color{ForestGreen}\bfseries#1 
+\end{mdframed}
+}
 \mdfdefinestyle{warn}{
       linewidth=1pt,
       skipabove=12pt,
@@ -507,8 +512,20 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
       innertopmargin=8pt,
       innerbottommargin=8pt,
       nobreak=true,
-      userdefinedwidth=10cm,
       align=center,
       linecolor=BrickRed,
       backgroundcolor=Mahogany!5,}
-\newcommand{\warning}[1]{\begin{mdframed}[style=warn]\color{BrickRed}\textbf{\bfont Importante!~}#1 \end{mdframed}}
+\newcommand{\warning}[1]{
+\newlength{\leng}
+\newdimen\mywidth
+\setbox0=\hbox{Importante! #1}
+\mywidth=\wd0
+\ifdim\mywidth>16cm
+\setlength{\leng}{16cm}
+\else\setlength{\leng}{\mywidth}
+\fi
+\addtolength{\leng}{20pt}
+\begin{mdframed}[userdefinedwidth=\leng,style=warn]
+\color{BrickRed}\textbf{\bfont Importante!~}#1 
+\end{mdframed}
+}
