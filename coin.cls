@@ -15,8 +15,8 @@
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[portuguese]{babel}
 \RequirePackage{graphicx,float,geometry,enumitem,varwidth,calc,csquotes}
-\RequirePackage{ifthen,import,xparse,soul,emptypage,float,indentfirst}
-\RequirePackage{tikz,asymptote,pgfplots}
+\RequirePackage{ifthen,import,xparse,soul,emptypage,float,indentfirst,multicol}
+\RequirePackage{tikz,asymptote,pgfplots,pgffor}
 \RequirePackage{biblatex}
 \RequirePackage{amssymb,amsfonts,amsmath,amsthm,thmtools,pifont}
 \RequirePackage[hidelinks]{hyperref}
@@ -24,6 +24,8 @@
 \RequirePackage[framemethod=TikZ]{mdframed}
 \RequirePackage{units}%(https://linorg.usp.br/CTAN/macros/latex/contrib/units/units.pdf)
 %Pacotes importados
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{width=10cm,compat=1.9}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Cores e estilos
 \newcommand{\bfont}{\sffamily\selectfont}%fonte bonitinha
@@ -39,14 +41,16 @@ linktocpage=true,
 \newcommand{\hrulebar}{\par\noindent\hspace{\fill}\rule{0.95\linewidth}{.7pt}\hspace{\fill}
   \par\nointerlineskip \vspace{\baselineskip}}%barrinha
   
-\newcommand{\emfase}[1]{{\bfseries\bfont\hl{#1}}\normalfont}
+\newcommand{\emfase}[1]{{\bfseries\bfont#1}\normalfont}
 
-\newcommand{\destaque}[1]{\textbf{\bfont\textcolor{purple}{#1}}}
+\newcommand{\destaque}[1]{{\bfseries\bfont\hl{#1}}\normalfont}
+
+\newcommand{\termo}[1]{\textbf{\bfont\textcolor{purple}{#1}}}
 
 \newgeometry{
 bottom=3cm,
-left=1.5cm,
-right=1.5cm,
+left=2.5cm,
+right=2.5cm,
 top=2.7cm,
 }
 \newcommand{\coin}{{\bfont\bfseries\color{teal}COIN}} %usado para mencionar o projeto coin
@@ -81,7 +85,7 @@ top=2.7cm,
 \Huge\bfseries\bfont\@title\\\bigskip
 \Large COIN Project \raisebox{-0.2\totalheight}{\includegraphics[height=0.7cm]{coin.png}}\\\bigskip\medskip
 \normalfont \large Material criado por: \em\@author\\\vspace{1.5cm}
-}\pagestyle{ffancy}
+}\pagestyle{ffancy}\setcounter{figure}{0}
 }%Fazendo o Título lindo
 
 \titleformat{\section}[hang]{\Large  \bfseries \bfont }{\noindent\hspace{0.1cm}\fbox{\textcolor{purple}{\thesection}}}{0.2cm}{}[\hrulefill]%titulo de secao
@@ -89,6 +93,11 @@ top=2.7cm,
 
 \titleformat{\subsection}[hang]{\large \bfseries \bfont}{}{0.3cm}{\textcolor{purple}{$\blacksquare~$}}[]%titulo de subsecao
 \titlespacing{\subsection}{0cm}{0.4cm}{0.2cm}
+
+\let\sectionteste=\section
+\let\subsectionteste=\subsection
+\renewcommand{\section}[1]{\sectionteste{#1}\label{sec\thesection}}
+\renewcommand{\subsection}[1]{\subsectionteste{#1}\label{sec\thesubsection}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Comandos matemáticos para facilitar
 % Esses comandos sao inspirados/copiados pelo evan.sty
@@ -149,6 +158,11 @@ top=2.7cm,
 \DeclareMathOperator{\tg}{tg}%tangente brasileira
 \DeclareMathOperator{\senh}{senh}%seno hiperbólico brasileiro
 \DeclareMathOperator{\sech}{sech}%secante hiperbólica
+\DeclareMathOperator{\arcsen}{arcsen}%arco seno brasileiro
+\DeclareMathOperator{\arctg}{arctg}%arco seno brasileiro
+\DeclareMathOperator{\arsenh}{arsenh}%arco seno hiperbólico
+\DeclareMathOperator{\arcosh}{arcosh}%arco cosseno hiperbólico
+\DeclareMathOperator{\artanh}{artanh}%arco tangente hiperbólico
 \newcommand{\cycsum}{\sum_{\mathrm{cic}}}%somatorio ciclico
 \newcommand{\symsum}{\sum_{\mathrm{sim}}}%somatorio simetrico
 \newcommand{\cycprod}{\prod_{\mathrm{cic}}}%produtorio ciclico
@@ -173,11 +187,13 @@ top=2.7cm,
 \renewcommand{\qed}{\hspace{1cm} $\blacksquare$}%qed
 \newcommand{\dev}[3][1]{
 \ifnum #1=1
-\frac{d#2}{d#3}
+\frac{\mathrm{d}#2}{\mathrm{d}#3}
 \else
-\frac{d^{#1}#2}{d#3^{#1}}
+\frac{\mathrm{d}^{#1}#2}{\mathrm{d}#3^{#1}}
 \fi
 }%derivada
+\newcommand{\de}{\mathrm{d}}
+\newcommand{\dep}{^\prime}
 \newcommand{\pardev}[3][1]{
 \ifnum#1=1
 \frac{\partial#2}{\partial#3}
@@ -329,6 +345,7 @@ top=2.7cm,
       bottomline=false,
       linecolor=ForestGreen,
       backgroundcolor=ForestGreen!5,
+      nobreak=true,
     }
     \declaretheoremstyle[
       headfont=\bfseries\sffamily\color{ForestGreen!70!black},
@@ -347,6 +364,7 @@ top=2.7cm,
       bottomline=false,
       linecolor=black,
       backgroundcolor=RedViolet!5!gray!5,
+      nobreak=true,
     }
     \declaretheoremstyle[
       headfont=\bfseries,
@@ -365,6 +383,7 @@ top=2.7cm,
       bottomline=false,
       linecolor=Yellow,
       backgroundcolor=GreenYellow!20,
+      nobreak=true,
     }
     \declaretheoremstyle[
       headfont=\sffamily\bfseries\color{Yellow!50!Sepia},
@@ -379,24 +398,6 @@ top=2.7cm,
         spacebelow=8pt,
         bodyfont=\normalfont
       ]{basehead}
-    \mdfdefinestyle{mdyellowbox}{%
-      skipabove=8pt,
-      linewidth=2pt,
-      skipbelow=0pt,
-      rightline=false,
-      leftline=true,
-      topline=false,
-      bottomline=false,
-      linecolor=Yellow,
-      backgroundcolor=GreenYellow!20,
-    }
-    \declaretheoremstyle[
-      headfont=\sffamily\bfseries\color{Yellow!50!Sepia},
-      bodyfont=\normalfont,
-      spaceabove=2pt,
-      spacebelow=1pt,
-      mdframed={style=mdyellowbox}
-    ]{thmyellowbox}
     \mdfdefinestyle{mdwaterbox}{%
       linewidth=0.5pt,
       skipabove=12pt,
@@ -475,7 +476,7 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
 \par \medskip
 }
 \newcommand{\wtext}[1]{\end{enumerate}#1\begin{enumerate}[resume*]}
-\newenvironment{walk}[1][]{\par\noindent\textbf{\textcolor{green!30!black}{Solução Guiada --- }}#1\begin{enumerate}[label=\bfseries(\alph*)]}{\end{enumerate}}
+\newenvironment{walk}[1][ ]{\par\noindent\textbf{\textcolor{green!30!black}{Solução Guiada --- }}#1\begin{enumerate}[label=\bfseries(\alph*)]}{\end{enumerate}}
 \mdfdefinestyle{importat}{
       linewidth=1pt,
       skipabove=12pt,
@@ -488,14 +489,14 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
       nobreak=true,
       align=center,
       linecolor=ForestGreen,}
-\newcommand{\important}[1]{
 \newlength{\lengi}
-\newdimen\mywidth
+\newdimen\mywidthe
+\newcommand{\important}[1]{
 \setbox0=\hbox{\bfseries#1}
-\mywidth=\wd0
-\ifdim\mywidth>16cm
-\setlength{\lengi}{16cm}
-\else\setlength{\lengi}{\mywidth}
+\mywidthe=\wd0
+\ifdim\mywidthe>15cm
+\setlength{\lengi}{15cm}
+\else\setlength{\lengi}{\mywidthe}
 \fi
 \addtolength{\lengi}{20pt}
 \begin{mdframed}[userdefinedwidth=\lengi,style=importat]
@@ -515,13 +516,13 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
       align=center,
       linecolor=BrickRed,
       backgroundcolor=Mahogany!5,}
-\newcommand{\warning}[1]{
-\newlength{\leng}
+      \newlength{\leng}
 \newdimen\mywidth
+\newcommand{\warning}[1]{
 \setbox0=\hbox{Importante! #1}
 \mywidth=\wd0
-\ifdim\mywidth>16cm
-\setlength{\leng}{16cm}
+\ifdim\mywidth>15cm
+\setlength{\leng}{15cm}
 \else\setlength{\leng}{\mywidth}
 \fi
 \addtolength{\leng}{20pt}
@@ -529,3 +530,5 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
 \color{BrickRed}\textbf{\bfont Importante!~}#1 
 \end{mdframed}
 }
+\let\captionteste=\caption
+\renewcommand{\caption}[1]{\cationteste{#1}\label{fig\thefigure}}
