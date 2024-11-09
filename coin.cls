@@ -15,7 +15,7 @@
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[portuguese]{babel}
 \RequirePackage{graphicx,float,geometry,enumitem,varwidth,calc,csquotes}
-\RequirePackage{ifthen,import,xparse,soul,emptypage,float,indentfirst,multicol}
+\RequirePackage{ifthen,import,xparse,soul,emptypage,float,indentfirst,multicol,etoolbox}
 \RequirePackage{tikz,asymptote,pgfplots,pgffor}
 \RequirePackage{biblatex}
 \RequirePackage{amssymb,amsfonts,amsmath,amsthm,thmtools,pifont}
@@ -531,4 +531,4 @@ $\circ$~{\bfont\color{teal}\textbf{#1:}}
 \end{mdframed}
 }
 \let\captionteste=\caption
-\renewcommand{\caption}[1]{\cationteste{#1}\label{fig\thefigure}}
+\renewcommand{\caption}[1]{\captionteste{#1}\label{fig\thefigure}}
